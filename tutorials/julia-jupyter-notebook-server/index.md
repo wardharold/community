@@ -79,12 +79,17 @@ The terminal output logs Terraform's progress as it executes the plan you genera
 ```sh
 Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
 ```
+Installing the Juila kernel takes approximately 10 minutes. Therefore even though the Compute Engine instance is running you won't be able to immediately connect to the notebook server. Wait 10 minutes and then proceed.
 ## Log into the notebook server
 The URL for your notebook server has the form: ```https://[your server name].[your domain]:8089```, *e.g.*, ```https://dobbs.sierramadre.net:8089```. When you navigate there with your browser you should see the Jupyter login screen.
+
 ![Jupyter Login Screen]()
+
 Enter your password and click the ```Log in``` button and you should see Jupyter interface.
+
 ![Jupyter Interface]()
-The ```startup.sh``` script closes a set of Julia [tutorials](https://github.com/JuliaComputing/JuliaBoxTutorials) from the [Julia Computing](https://juliacomputing.com/) GitHub [repo](https://github.com/JuliaComputing) to get started.
+
+The ```startup.sh``` script clones a set of Julia [tutorials](https://github.com/JuliaComputing/JuliaBoxTutorials) from the [Julia Computing](https://juliacomputing.com/) GitHub [repo](https://github.com/JuliaComputing) to get started.
 ## Clean up
 When you've finished your work teardown the notebook server, delete the firewall rule, and remove the DNS records associated with the notebook server.
 ```sh
