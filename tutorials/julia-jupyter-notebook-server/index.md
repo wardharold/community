@@ -13,6 +13,12 @@ This tutorial assumes you have a Cloud DNS managed zone with DNSSEC enabled. Fol
 To ensure that your domain is configured properly for issuing Let's Encrypt certificates use the the [Let's Debug](https://letsdebug.net/) diagonistic site. Enter the FQDN of the notebook server you're going to create, choose DNS-01 from the validation method pull down (to the right of the input field), and click ```Run Test```. You will see a green "All OK!" message box if your configuration is correct. If something is wrong with your configuration the resulting message boxes will help you debug the issue as will the [Let's Encrypt community forum](https://community.letsencrypt.org/).
 
 ## Costs
+This tutorial uses billable components of GCP, including:
+
+- Compute Engine
+- Cloud DNS
+
+Use the [Pricing Calculator](https://cloud.google.com/products/calculator/#id=cdaa96a1-84a6-468d-b5cc-493af9895149) to generate a cost estimate based on your projected usage.
 
 ## Configure Terraform variables
 The ```variables.tf``` file defines a collection of variables Terraform uses when creating a notebook server.
@@ -62,6 +68,7 @@ Update ```startup.sh``` with the hashed version of your password.
 ```sh
 sed -i 's/HASHED_PASSWD/'"${HASHED_PASSWD}"'/' startup.sh
 ```
+
 ## Verify your configuration
 Generate a Terraform plan
 ```sh
@@ -95,6 +102,7 @@ Enter your password and click the ```Log in``` button and you should see Jupyter
 ![Jupyter Interface](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/secure-jupyter-interface.png)
 
 The ```startup.sh``` script clones a set of Julia [tutorials](https://github.com/JuliaComputing/JuliaBoxTutorials) from the [Julia Computing](https://juliacomputing.com/) GitHub [repo](https://github.com/JuliaComputing) to get started.
+
 ## Clean up
 When you've finished your work teardown the notebook server, delete the firewall rule, and remove the DNS records associated with the notebook server.
 ```sh
