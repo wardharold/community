@@ -6,11 +6,11 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 ## Objectives
 * Create a secure Jupyter notebook server with a Juila kernel installed
 * Demonstrate acquiring a Let's Encrypt certificate via Terraform
-* Make it easy to provide Julia enabled notebooks to researchers and developers in compute intensive fields
 
 ## Before you begin
 
 ## Costs
+
 ## Configure Terraform variables
 The ```variables.tf``` file defines a collection of variables Terraform uses when creating a notebook server.
 
@@ -38,9 +38,44 @@ acme_registration_email = "fred.c.dobbs@sierra.madre.net"
 ```
 
 ## Create a notebook server password
+The notebook server uses a password for authentication. You must include a hashed version of your password in the Compute Engine instance startup script ```startup.sh```. You will use the Jupyter ```notebook.auth``` Python module to create a hashed version of your desired password.
+
+Install the Jupyter Python modules if necessary.
+```sh
+pip3 install jupyter
+```
+Generate a hashed version of your desired password.
+```sh
+PASSWD=[YOUR DESIRED PASSWORD]
+HASHED_PASSWD=$(python3 -c "from notebook.auth import passwd; print(passwd(\"${PASSWD}\"))")
+```
+If you can't install the Jupyter Python modules you can use the hashed version of the password: ```$$nTh3b@nc```. **This is not the recommended approach. If you use it change the password on your notebook server when you login the first time.**
+```sh
+HASHED_PASSWD='sha1:8f334ff5f862:c19298d6e4f03fe9ec6e6a5c127927c86d47ec2a'
+```
+Update ```startup.sh``` with the hashed version of your password.
+```sh
+sed -i 's/HASHED_PASSWD/'"${HASHED_PASSWD}"'/' startup.sh
+```
 ## Verify your configuration
+Generate a Terraform plan
+```sh
+terraform plan -out tf.plan -auto-approve
+```
+The terminal output describes the resources that Terraform will create/configure
+* acme_certificate.certificate: check that the *common_name* field contains the correct FQDN for your notebook server
+* acme_registration.reg: check that the *email_address* field contains the correct email address
+* google_compute_firewall.jupyter-server: check that the *target_tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
+* google_compute_instance.nbs: check that the *tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
+* google_dns_record_set.nbs: check that the *name* field contains the correct FQDN for your notebook server
+* tls_private_key.private_key
+
 ## Create the notebook server
 To create the notebook server type
 ```sh
-terraform apply -auto-approve
+terraform apply tf.plan
+```
+The terminal output logs Terraform's progress as it executes the plan you generated earlier. When it completes you will see:
+```sh
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
 ```
