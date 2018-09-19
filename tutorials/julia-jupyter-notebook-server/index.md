@@ -11,8 +11,33 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 ## Before you begin
 
 ## Costs
-## Configuration
-## Terraforming
+## Configure Terraform variables
+The ```variables.tf``` file defines a collection of variables Terraform uses when creating a notebook server.
+| Name | Default Value | Description |
+| acme_registration_email || Email address to be associated with the Let's Encrypt private key registration |
+| manage_zone || The Cloud DNS Managed Zone that will contain the notebook server's DNS records |
+| project || Name of the project that will contain the notebook server |
+| servername || Name of the notebook server |
+| acme_server_url | https://acme-staging-v02.api.letsencrypt.org/directory | URL for the Let's Encrypt ACME server |
+| disk_size | 16 (Gigabytes) | Size of the notebook server boot disk |
+| jupyter_server_port | 8089 | Port the notebook server will listen on |
+| machine_type | n1-standard-2 | Notebook server machine type |
+| network | default | The Google Cloud Platform network the notebook server will be attached to |
+| region | us-central1 | The compute region the notebook server will run in |
+| zone | us-central1-b | The compute zone the notebook server will run in |
+
+You must provide values for all of the variables without default values: project, managed_zone, acme_registration_email, and servername.
+Terraform will prompt you for required values or you can specify them in a ```terraform.tfvars``` file. For example
+```
+project = "my-julia-jupyter-notebook-server-project"
+manage_zone = "ExampleDotCom"
+servername = "my-julia-notebook-server"
+acme_registration_email = "fred.c.dobbs@sierra.madre.net"
+```
+
+## Create a notebook server password
+## Verify your configuration
+## Create the notebook server
 To create the notebook server type
 ```sh
 terraform apply -auto-approve
