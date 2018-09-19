@@ -88,11 +88,11 @@ Installing the Juila kernel takes approximately 10 minutes. Therefore even thoug
 ## Log into the notebook server
 The URL for your notebook server has the form: ```https://[your server name].[your domain]:8089```, *e.g.*, ```https://dobbs.sierramadre.net:8089```. When you navigate there with your browser you should see the Jupyter login screen.
 
-![Jupyter Login Screen](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/jupyterlogin.png)
+![Jupyter Login Screen](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/secure-jupyter-login.png)
 
 Enter your password and click the ```Log in``` button and you should see Jupyter interface.
 
-![Jupyter Interface](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/jupytertoplevel.png)
+![Jupyter Interface](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/secure-jupyter-interface.png)
 
 The ```startup.sh``` script clones a set of Julia [tutorials](https://github.com/JuliaComputing/JuliaBoxTutorials) from the [Julia Computing](https://juliacomputing.com/) GitHub [repo](https://github.com/JuliaComputing) to get started.
 ## Clean up
