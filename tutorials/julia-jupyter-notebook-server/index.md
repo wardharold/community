@@ -6,10 +6,14 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 ## Objectives
 * Create a secure Jupyter notebook server with a Juila kernel installed
 * Demonstrate acquiring a Let's Encrypt certificate via Terraform
-* Make it easy to provide valuable tooling to researchers and developers in compute intensive fields
+* Make it easy to provide Julia enabled notebooks to researchers and developers in compute intensive fields
 
 ## Before you begin
 
 ## Costs
 ## Configuration
 ## Terraforming
+To create the notebook server type
+```sh
+terraform apply -auto-approve
+```
