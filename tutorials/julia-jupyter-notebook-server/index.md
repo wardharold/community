@@ -8,6 +8,9 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 * Demonstrate acquiring a Let's Encrypt certificate via Terraform
 
 ## Before you begin
+This tutorial assumes you have a Cloud DNS managed zone with DNSSEC enabled. Follow [this DNSSEC tutorial](https://cloud.google.com/community/tutorials/dnssec-cloud-dns-domains) to activate DNSSEC on your Cloud DNS managed domain.
+
+To ensure that your domain is configured properly for issuing Let's Encrypt certificates use the the [Let's Debug](https://letsdebug.net/) diagonistic site. Enter the FQDN of the notebook server you're going to create, choose DNS-01 from the validation method pull down (to the right of the input field), and click ```Run Test```. You will see a green "All OK!" message box if your configuration is correct. If something is wrong with your configuration the resulting message boxes will help you debug the issue as will the [Let's Encrypt community forum](https://community.letsencrypt.org/).
 
 ## Costs
 
@@ -20,7 +23,7 @@ The ```variables.tf``` file defines a collection of variables Terraform uses whe
 | manage_zone || The Cloud DNS Managed Zone that will contain the notebook server's DNS records |
 | project || Name of the project that will contain the notebook server |
 | servername || Name of the notebook server |
-| acme_server_url | https://acme-staging-v02.api.letsencrypt.org/directory | URL for the Let's Encrypt ACME server |
+| acme_server_url | https://acme-v02.api.letsencrypt.org/directory | URL for the Let's Encrypt ACME server |
 | disk_size | 16 (Gigabytes) | Size of the notebook server boot disk |
 | jupyter_server_port | 8089 | Port the notebook server will listen on |
 | machine_type | n1-standard-2 | Notebook server machine type |
@@ -36,6 +39,8 @@ manage_zone = "ExampleDotCom"
 servername = "my-julia-notebook-server"
 acme_registration_email = "fred.c.dobbs@sierra.madre.net"
 ```
+
+The default value for the acme_server_url variable is the URL of the Let's Encrypt production environment. If you are experimenting and genterating lots of certificates use their staging environment to avoid hitting rate limits. The URL for the Let's Encrypt staging environment is: https://acme-staging-v02.api.letsencrypt.org/directory
 
 ## Create a notebook server password
 The notebook server uses a password for authentication. You must include a hashed version of your password in the Compute Engine instance startup script ```startup.sh```. You will use the Jupyter ```notebook.auth``` Python module to create a hashed version of your desired password.
