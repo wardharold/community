@@ -4,7 +4,7 @@ variable "project" {}
 variable "servername" {}
 
 variable "acme_server_url" {
-  default = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  default = "https://acme-v02.api.letsencrypt.org/directory"
 }
 
 variable "disk_size" {
