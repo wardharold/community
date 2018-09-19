@@ -13,7 +13,9 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 ## Costs
 ## Configure Terraform variables
 The ```variables.tf``` file defines a collection of variables Terraform uses when creating a notebook server.
+
 | Name | Default Value | Description |
+| --- | --- | --- |
 | acme_registration_email || Email address to be associated with the Let's Encrypt private key registration |
 | manage_zone || The Cloud DNS Managed Zone that will contain the notebook server's DNS records |
 | project || Name of the project that will contain the notebook server |
@@ -28,7 +30,7 @@ The ```variables.tf``` file defines a collection of variables Terraform uses whe
 
 You must provide values for all of the variables without default values: project, managed_zone, acme_registration_email, and servername.
 Terraform will prompt you for required values or you can specify them in a ```terraform.tfvars``` file. For example
-```
+```terraform.tfvars
 project = "my-julia-jupyter-notebook-server-project"
 manage_zone = "ExampleDotCom"
 servername = "my-julia-notebook-server"
