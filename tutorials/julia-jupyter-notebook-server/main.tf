@@ -17,15 +17,21 @@ locals {
 
 # Lets Encrypt snippet start
 resource "tls_private_key" "private_key" {
+  count = "${var.use_acme_cert}"
+
   algorithm = "RSA"
 }
 
 resource "acme_registration" "reg" {
+  count = "${var.use_acme_cert}"
+
   account_key_pem = "${tls_private_key.private_key.private_key_pem}"
   email_address   = "${var.acme_registration_email}"
 }
 
 resource "acme_certificate" "certificate" {
+  count = "${var.use_acme_cert}"
+
   account_key_pem = "${acme_registration.reg.account_key_pem}"
   common_name     = "${var.servername}.${local.dns_name}"
 
@@ -38,20 +44,10 @@ resource "acme_certificate" "certificate" {
 }
 # Lets Encrypt snippet end
 
-# Cloud DNS A record snippet start
-resource "google_dns_record_set" "nbs" {
-  name = "${var.servername}.${data.google_dns_managed_zone.notebooks.dns_name}"
-  type = "A"
-  ttl  = 300
+# ACME cert Compute instance snippet start
+resource "google_compute_instance" "nbs_acme_cert" {
+  count = "${var.use_acme_cert}"
 
-  managed_zone = "${data.google_dns_managed_zone.notebooks.name}"
-
-  rrdatas = ["${google_compute_instance.nbs.network_interface.0.access_config.0.assigned_nat_ip}"]
-}
-# Cloud DNS A record snippet end
-
-# Compute instance snippet start
-resource "google_compute_instance" "nbs" {
   name         = "${var.servername}"
   machine_type = "${var.machine_type}"
   zone         = "${var.zone}"
@@ -73,6 +69,16 @@ resource "google_compute_instance" "nbs" {
   }
 
   metadata {
+    startup-script = <<STARTUP
+${file("${path.module}/setup.sh")}
+${file("${path.module}/acme-cert.sh")}
+${file("${path.module}/jupyter-config.sh")}
+${file("${path.module}/install-julia.sh")}
+${file("${path.module}/start-jupyter.sh")}
+STARTUP
+  }
+
+  metadata {
     le_cert = "${acme_certificate.certificate.certificate_pem}"
   }
 
@@ -82,7 +88,70 @@ resource "google_compute_instance" "nbs" {
 
   tags = ["jupyter-server-${var.servername}"]
 }
-# Compute instance snippet end
+# ACME cert Compute instance snippet end
+
+# ACME cert Cloud DNS A record snippet start
+resource "google_dns_record_set" "nbs_acme_cert" {
+  count = "${var.use_acme_cert}"
+
+  name = "${var.servername}.${data.google_dns_managed_zone.notebooks.dns_name}"
+  type = "A"
+  ttl  = 300
+
+  managed_zone = "${data.google_dns_managed_zone.notebooks.name}"
+
+  rrdatas = ["${google_compute_instance.nbs_acme_cert.network_interface.0.access_config.0.assigned_nat_ip}"]
+}
+# ACME cert Cloud DNS A record snippet end
+
+# Self-signed cert Compute instance snippet start
+resource "google_compute_instance" "nbs_self_signed_cert" {
+  count = "${1 - var.use_acme_cert}"
+
+  name         = "${var.servername}"
+  machine_type = "${var.machine_type}"
+  zone         = "${var.zone}"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+      size  = "${var.disk_size}"
+    }
+  }
+
+  network_interface {
+    access_config = {}
+    network       = "${var.network}"
+  }
+
+  metadata {
+    startup-script = <<STARTUP
+${file("${path.module}/setup.sh")}
+${file("${path.module}/self-signed-cert.sh")}
+${file("${path.module}/jupyter-config.sh")}
+${file("${path.module}/install-julia.sh")}
+${file("${path.module}/start-jupyter.sh")}
+STARTUP
+  }
+
+  tags = ["jupyter-server-${var.servername}"]
+}
+# Self-signed cert Compute instance snippet end
+
+# Self-signed cert Cloud DNS A record snippet start
+resource "google_dns_record_set" "nbs_self_signed_cert" {
+  count = "${1 - var.use_acme_cert}"
+
+  name = "${var.servername}.${data.google_dns_managed_zone.notebooks.dns_name}"
+  type = "A"
+  ttl  = 300
+
+  managed_zone = "${data.google_dns_managed_zone.notebooks.name}"
+
+  rrdatas = ["${google_compute_instance.nbs_self_signed_cert.network_interface.0.access_config.0.assigned_nat_ip}"]
+}
+# Self-signed Cloud DNS A record snippet end
+
 
 # Firewall snippet start
 resource "google_compute_firewall" "jupyter-server" {
