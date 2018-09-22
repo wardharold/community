@@ -13,7 +13,9 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 You need to have HashiCorp's [Terraform](https://www.terraform.io/) installed to work through this tutorial. If you don't have it installed the instructions can be found [here](https://www.terraform.io/intro/getting-started/install.html).
 
 ### DNS
-This tutorial assumes you have a [Cloud DNS](https://cloud.google.com/dns/) managed zone where you can create DNS Address (```A```) records for your notebook server. To use Cloud DNS you need a registered domain name; you can register a domain name through [Google Domains](https://domains.google/#/) or another domain registrar of your choice. Once you have your domain registered you can use this [quickstart](https://cloud.google.com/dns/quickstart) to set up a managed zone.
+This tutorial assumes you have a [Cloud DNS](https://cloud.google.com/dns/) managed zone where you can create DNS Address (```A```) records for your notebook server. 
+
+To use Cloud DNS you need a registered domain name. If you don't have one you can register a domain name through [Google Domains](https://domains.google/#/) or another domain registrar of your choice. Once you have your domain registered you can use this [quickstart](https://cloud.google.com/dns/quickstart) to set up a managed zone.
 
 You can choose to create a notebook server with a self-signed certificate or you can have Terraform acquire a Let's Encrypt issued certificate for your notebook server. If you want to do the latter you will need to enable [DNSSEC](https://cloud.google.com/dns/dnssec) on your managed domain. Follow [this DNSSEC tutorial](https://cloud.google.com/community/tutorials/dnssec-cloud-dns-domains) to activate DNSSEC.
 
