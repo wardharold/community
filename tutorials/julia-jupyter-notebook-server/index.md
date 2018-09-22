@@ -8,7 +8,14 @@ Julia is a relatively new language that has emerged from MIT to address the ["tw
 * Demonstrate acquiring a Let's Encrypt certificate via Terraform
 
 ## Before you begin
-This tutorial assumes you have a Cloud DNS managed zone with DNSSEC enabled. Follow [this DNSSEC tutorial](https://cloud.google.com/community/tutorials/dnssec-cloud-dns-domains) to activate DNSSEC on your Cloud DNS managed domain.
+
+### Terraform
+You need to have HashiCorp's [Terraform](https://www.terraform.io/) installed to work through this tutorial. If you don't have it installed the instructions can be found [here](https://www.terraform.io/intro/getting-started/install.html).
+
+### DNS
+This tutorial assumes you have a [Cloud DNS](https://cloud.google.com/dns/) managed zone where you can create DNS Address (```A```) records for your notebook server. To use Cloud DNS you need a registered domain name; you can register a domain name through [Google Domains](https://domains.google/#/) or another domain registrar of your choice. Once you have your domain registered you can use this [quickstart](https://cloud.google.com/dns/quickstart) to set up a managed zone.
+
+You can choose to create a notebook server with a self-signed certificate or you can have Terraform acquire a Let's Encrypt issued certificate for your notebook server. If you want to do the latter you will need to enable [DNSSEC](https://cloud.google.com/dns/dnssec) on your managed domain. Follow [this DNSSEC tutorial](https://cloud.google.com/community/tutorials/dnssec-cloud-dns-domains) to activate DNSSEC.
 
 To ensure that your domain is configured properly for issuing Let's Encrypt certificates use the the [Let's Debug](https://letsdebug.net/) diagonistic site. Enter the FQDN of the notebook server you're going to create, choose DNS-01 from the validation method pull down (to the right of the input field), and click ```Run Test```. You will see a green "All OK!" message box if your configuration is correct. If something is wrong with your configuration the resulting message boxes will help you debug the issue as will the [Let's Encrypt community forum](https://community.letsencrypt.org/).
 
@@ -35,6 +42,7 @@ The ```variables.tf``` file defines a collection of variables Terraform uses whe
 | machine_type | n1-standard-2 | Notebook server machine type |
 | network | default | The Google Cloud Platform network the notebook server will be attached to |
 | region | us-central1 | The compute region the notebook server will run in |
+| use_acme_cert | true | Acquire a Let's Encrypt issued certificate and install it on the notebook server |
 | zone | us-central1-b | The compute zone the notebook server will run in |
 
 You must provide values for all of the variables without default values: project, managed_zone, acme_registration_email, and servername.
@@ -74,13 +82,20 @@ Generate a Terraform plan
 ```sh
 terraform plan -out tf.plan -auto-approve
 ```
-The terminal output describes the resources that Terraform will create/configure
+The terminal output describes the resources that Terraform will create/configure.
+
+If ```use_acme_cert``` is true (the default) the output will include
 * acme_certificate.certificate: check that the *common_name* field contains the correct FQDN for your notebook server
 * acme_registration.reg: check that the *email_address* field contains the correct email address
 * google_compute_firewall.jupyter-server: check that the *target_tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
-* google_compute_instance.nbs: check that the *tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
-* google_dns_record_set.nbs: check that the *name* field contains the correct FQDN for your notebook server
+* google_compute_instance.nbs_acme_cert: check that the *tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
+* google_dns_record_set.nbs_acme_cert: check that the *name* field contains the correct FQDN for your notebook server
 * tls_private_key.private_key
+
+If you set ```use_acme_cert``` to false only these resources will be created/configured
+* google_compute_firewall.jupyter-server: check that the *target_tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
+* google_compute_instance.nbs_self_signed_cert: check that the *tags.nnnnnnnnnn* field is set to *jupyter-server-[your server name]*
+* google_dns_record_set.nbs_self_signed_cert: check that the *name* field contains the correct FQDN for your notebook server
 
 ## Create the notebook server
 To create the notebook server type
@@ -92,10 +107,13 @@ The terminal output logs Terraform's progress as it executes the plan you genera
 Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
 ```
 Installing the Juila kernel takes approximately 10 minutes. Therefore even though the Compute Engine instance is running you won't be able to immediately connect to the notebook server. Wait 10 minutes and then proceed.
+
 ## Log into the notebook server
 The URL for your notebook server has the form: ```https://[your server name].[your domain]:8089```, *e.g.*, ```https://dobbs.sierramadre.net:8089```. When you navigate there with your browser you should see the Jupyter login screen.
 
 ![Jupyter Login Screen](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/secure-jupyter-login.png)
+
+Note that if your notebook server has a self-signed certificate your browser will complain that the connection is not private because it does not recognize the self-signed certificate. You will need to manually accept the certificate to proceed.
 
 Enter your password and click the ```Log in``` button and you should see Jupyter interface.
 
