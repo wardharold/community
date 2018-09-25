@@ -59,7 +59,7 @@ acme_registration_email = "fred.c.dobbs@sierra.madre.net"
 The default value for the acme_server_url variable is the URL of the Let's Encrypt production environment. If you are experimenting and genterating lots of certificates use their staging environment to avoid hitting rate limits. The URL for the Let's Encrypt staging environment is: https://acme-staging-v02.api.letsencrypt.org/directory
 
 ## Create a notebook server password
-The notebook server uses a password for authentication. You must include a hashed version of your password in the Compute Engine instance startup script ```startup.sh```. You will use the Jupyter ```notebook.auth``` Python module to create a hashed version of your desired password.
+The notebook server uses a password for authentication. You must include a hashed version of your password in the Compute Engine instance startup script ```jupyter-config.sh```. You will use the Jupyter ```notebook.auth``` Python module to create a hashed version of your desired password.
 
 Install the Jupyter Python modules if necessary.
 ```sh
@@ -74,9 +74,9 @@ If you can't install the Jupyter Python modules you can use the hashed version o
 ```sh
 HASHED_PASSWD='sha1:8f334ff5f862:c19298d6e4f03fe9ec6e6a5c127927c86d47ec2a'
 ```
-Update ```startup.sh``` with the hashed version of your password.
+Update ```jupyter-config.sh``` with the hashed version of your password.
 ```sh
-sed -i 's/HASHED_PASSWD/'"${HASHED_PASSWD}"'/' startup.sh
+sed -i 's/HASHED_PASSWD/'"${HASHED_PASSWD}"'/' jupyter-config.sh
 ```
 
 ## Verify your configuration
@@ -121,7 +121,7 @@ Enter your password and click the ```Log in``` button and you should see Jupyter
 
 ![Jupyter Interface](https://github.com/wardharold/community/blob/master/tutorials/julia-jupyter-notebook-server/secure-jupyter-interface.png)
 
-The ```startup.sh``` script clones a set of Julia [tutorials](https://github.com/JuliaComputing/JuliaBoxTutorials) from the [Julia Computing](https://juliacomputing.com/) GitHub [repo](https://github.com/JuliaComputing) to get started.
+The ```setup.sh``` script clones a set of Julia [tutorials](https://github.com/JuliaComputing/JuliaBoxTutorials) from the [Julia Computing](https://juliacomputing.com/) GitHub [repo](https://github.com/JuliaComputing) to get started.
 
 ## Clean up
 When you've finished your work teardown the notebook server, delete the firewall rule, and remove the DNS records associated with the notebook server.
